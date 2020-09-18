@@ -6,6 +6,7 @@ import datetime
 import time
 import os
 import sys
+import platform
 
 LOGIN_URL = "https://pointage.adp.com/"
 CLOCKING_URL = "https://pointage.adp.com/ipclogin/1/loginform.fcc"
@@ -118,8 +119,13 @@ def get_clocking_time():
     soup = BeautifulSoup(res.content, "html.parser")
     return soup
 
-def main():
+def main(try_attempt = 0):
     soup = get_clocking_time()
+
+    # Test purpose
+    #with open("../page.html", "r") as mock:
+    #    soup = BeautifulSoup(mock.read(), "html.parser")
+
     texts = soup.find_all(text=True)
 
     date = ''
@@ -134,8 +140,12 @@ def main():
             date_time_obj.append(datetime.datetime.strptime(date_time, '%d/%m/%Y %H:%M'))
 
     goal_time = datetime.timedelta(hours=7)
-    if len(date_time_obj) < 1:
-        print('Too few time registered for today')
+    if len(date_time_obj) < 1 and try_attempt != 0:
+        webbrowser.open(LOGIN_URL)
+    elif len(date_time_obj) < 1 and try_attempt == 0:
+        # wait for 2.5 minutes
+        time.sleep(150)
+        main(try_attempt = 1)
     elif len(date_time_obj) == 1:
         print('You started your day at: ' + str(date_time_obj[0]))
     elif len(date_time_obj) == 2:
@@ -157,4 +167,6 @@ def main():
         sys.exit()
 
 main()
-os.system('pause')
+
+if platform.system() == "Windows":
+    os.system('pause')
