@@ -110,9 +110,8 @@ def get_clocking_time():
         elif input_tag["name"] == "FONCTION":
             data[input_tag["name"]] = ""
         elif input_tag["type"] != "submit":
-            # all others except submit, prompt the user to set it
-            value = input(f"Enter the value of the field '{input_tag['name']}' (type: {input_tag['type']}): ")
-            data[input_tag["name"]] = value
+            print('Error, exiting...')
+            sys.exit()
 
     res = session.post(res.url, data=data)
 
@@ -158,3 +157,4 @@ def main():
         sys.exit()
 
 main()
+os.system('pause')
